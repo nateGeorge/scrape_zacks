@@ -20,5 +20,6 @@ within_week = esp_df[esp_df['Reporting Date'] < nearest_plus_1w]
 
 # TODO: find stocks with large ESP, and earnings diff of more than 1 or 2 cents
 # check if different from surprise last quarter
+# need to also check revenue/EPS trend, technicals, and instutional investment
 
 # find
