@@ -176,9 +176,11 @@ def download_buy_list(driver):
 
 def download_esp_lists(driver):
     driver.get(esp_buys_url)
-    driver.find_element_by_class_name('buttons-csv').click()
+    time.sleep(5.78)
     filename = FILEPATH + 'Zacks Earnings Surprise Prediction - Zacks Investment Research.csv'
     if os.path.exists(filename): os.remove(filename)
+    driver.find_element_by_class_name('buttons-csv').click()
+    time.sleep(2.7)
 
     df = pd.read_csv(filename, parse_dates=['Reporting Date'], infer_datetime_format=True)
     pct_cols = ['ESP', '% Surprise (last Qtr.)']
@@ -191,8 +193,9 @@ def download_esp_lists(driver):
 
     # get ESP sell list
     driver.find_element_by_link_text('ESP Sells').click()
+    time.sleep(5.89)  # TODO: should wait until some elements are visible or something
     driver.find_element_by_class_name('buttons-csv').click()
-    filename = FILEPATH + 'Zacks Earnings Surprise Prediction - Zacks Investment Research.csv'
+    time.sleep(2.72)
 
     df = pd.read_csv(filename, parse_dates=['Reporting Date'], infer_datetime_format=True)
     pct_cols = ['ESP', '% Surprise (last Qtr.)']
@@ -308,4 +311,5 @@ def daily_updater():
 
 
 if __name__ == "__main__":
+    # TODO: scrape EPS estimates, sales estimates, zacks ranks for more stocks
     daily_updater()
