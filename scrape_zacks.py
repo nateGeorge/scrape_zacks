@@ -296,7 +296,8 @@ def daily_updater():
         # check if up to date, if it is, sleep
         today_utc = pd.to_datetime('now')
         today_ny = datetime.datetime.now(pytz.timezone('America/New_York'))
-        up_to_date = today_ny.date() == get_latest_dl_date().date()
+        last_trading_day = get_last_open_trading_day()
+        up_to_date = last_trading_day == get_latest_dl_date().strftime('%Y-%m-%d')
         if up_to_date:
             print('up to date; sleeping 1h')
         else:
