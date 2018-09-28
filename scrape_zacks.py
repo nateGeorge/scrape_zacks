@@ -305,6 +305,7 @@ def dl_all_data():
     login(driver)
     all_good = False
     while not all_good:
+        print('downloading buy list')
         all_good = download_buy_list(driver)
         if not all_good:
             driver.quit()
@@ -313,6 +314,7 @@ def dl_all_data():
 
     all_good = False
     while not all_good:
+        print('downloading sell list')
         all_good = download_sell_list(driver)
         if not all_good:
             driver.quit()
@@ -321,6 +323,7 @@ def dl_all_data():
 
     all_good = False
     while not all_good:
+        print('downloading esp list')
         all_good = download_esp_lists(driver)
         if not all_good:
             driver.quit()
@@ -349,6 +352,8 @@ def daily_updater():
                 # will use last trading day as date
                 print('not up to date; downloading')
                 dl_all_data()
+
+            print('should be good now, sleeping')
 
         time.sleep(3600)
 
