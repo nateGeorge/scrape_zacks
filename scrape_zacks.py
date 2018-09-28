@@ -142,7 +142,11 @@ def load_clean_buy_sell_df(filename):
 
 def download_sell_list(driver):
     # check if up to date or not
-    driver.get(sell_list_url)
+    try:
+        driver.get(sell_list_url)
+    except:
+        return False
+
     filename = FILEPATH + 'rank_5.xls'
     if os.path.exists(filename): os.remove(filename)
     driver.find_element_by_link_text('Export to Excel').click()
@@ -155,10 +159,16 @@ def download_sell_list(driver):
     df.to_csv(FILEPATH + last_trading_day + '_sell_list.csv', index=False)
     os.remove(filename)  # delete xls file
 
+    return True
+
 
 def download_buy_list(driver):
     # TODO: check if up to date or not
-    driver.get(buy_list_url)
+    try:
+        driver.get(buy_list_url)
+    except:
+        return False
+
     filename = FILEPATH + 'rank_1.xls'
     if os.path.exists(filename): os.remove(filename)
     driver.find_element_by_link_text('Export to Excel').click()
@@ -173,9 +183,15 @@ def download_buy_list(driver):
     df.to_csv(FILEPATH + last_trading_day + '_buy_list.csv', index=False)
     os.remove(filename)  # delete xls file
 
+    return True
+
 
 def download_esp_lists(driver):
-    driver.get(esp_buys_url)
+    try:
+        driver.get(esp_buys_url)
+    except:
+        return False
+
     time.sleep(5.78)
     filename = FILEPATH + 'Zacks Earnings Surprise Prediction - Zacks Investment Research.csv'
     if os.path.exists(filename): os.remove(filename)
@@ -204,6 +220,8 @@ def download_esp_lists(driver):
 
     df.to_csv(FILEPATH + last_trading_day + '_esp_sells.csv', index=False)
     os.remove(filename)
+
+    return True
 
 
 def clean_price(x):
@@ -285,9 +303,30 @@ def get_latest_dl_date():
 def dl_all_data():
     driver = setup_driver()
     login(driver)
-    download_buy_list(driver)
-    download_sell_list(driver)
-    download_esp_lists(driver)
+    all_good = False
+    while not all_good:
+        all_good = download_buy_list(driver)
+        if not all_good:
+            driver.quit()
+            driver = setup_driver()
+            login(driver)
+
+    all_good = False
+    while not all_good:
+        all_good = download_sell_list(driver)
+        if not all_good:
+            driver.quit()
+            driver = setup_driver()
+            login(driver)
+
+    all_good = False
+    while not all_good:
+        all_good = download_esp_lists(driver)
+        if not all_good:
+            driver.quit()
+            driver = setup_driver()
+            login(driver)
+
     driver.quit()
 
 
