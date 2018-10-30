@@ -16,6 +16,8 @@ from selenium.common.exceptions import TimeoutException
 
 import pandas_market_calendars as mcal
 
+import zacks_utils as zu
+
 from pyvirtualdisplay import Display
 display = Display(visible=0, size=(1920, 1080))
 display.start()
@@ -108,38 +110,6 @@ def login(driver):
     print('should be logged in now!')
 
 
-def load_clean_buy_sell_df(filename):
-    # auto date parse doesn't work
-    df = pd.read_csv(filename, sep='\t')#, parse_dates=['Date Added'], infer_datetime_format=True)
-    pct_cols = ['Dividend Yield(%)',
-               'Price Movers: 1 Week(%)',
-               'Price Movers: 4 Week(%)',
-               'Biggest Est. Chg. Current Year(%)',
-               'Biggest Est. Chg. Next Year(%)',
-               'Biggest Surprise Last Qtr(%)',
-               'Market Cap (mil)', 'P/E (F1)', 'PEG',
-               'Projected Earnings Growth (1 Yr)(%)',
-               'Projected Earnings Growth (3-5 Yrs)(%)',
-               'Price Movers: 1 Day(%)',
-               'Price / Sales']
-
-    df.drop('Unnamed: 22', inplace=True, axis=1)
-    df[pct_cols] = df[pct_cols].applymap(clean_pcts)
-    df['Date Added'] = pd.to_datetime(df['Date Added'], format='%b %d,%Y')
-    score_dict = {'A': 1,
-                    'B': 2,
-                    'C': 3,
-                    'D': 4,
-                    'E': 5,
-                    'F': 6}
-
-    score_cols = ['Value Score', 'Growth Score', 'Momentum Score', 'VGM Score']
-    for s in score_cols:
-        df[s] = df[s].replace(score_dict)
-
-    return df
-
-
 def download_sell_list(driver):
     # check if up to date or not
     try:
@@ -154,8 +124,8 @@ def download_sell_list(driver):
     while os.path.exists(filename + '.part') and not os.path.exists(filename):
         time.sleep(0.2)
 
-    df = load_clean_buy_sell_df(filename)
-    last_trading_day = get_last_open_trading_day()
+    df = zu.load_clean_buy_sell_df(filename)
+    last_trading_day = zu.get_last_open_trading_day()
     df.to_csv(FILEPATH + last_trading_day + '_sell_list.csv', index=False)
     os.remove(filename)  # delete xls file
 
@@ -177,9 +147,9 @@ def download_buy_list(driver):
     while os.path.exists(filename + '.part') and not os.path.exists(filename):
         time.sleep(0.2)
 
-    df = load_clean_buy_sell_df(filename)
+    df = zu.load_clean_buy_sell_df(filename)
 
-    last_trading_day = get_last_open_trading_day()
+    last_trading_day = zu.get_last_open_trading_day()
     df.to_csv(FILEPATH + last_trading_day + '_buy_list.csv', index=False)
     os.remove(filename)  # delete xls file
 
@@ -200,10 +170,10 @@ def download_esp_lists(driver):
 
     df = pd.read_csv(filename, parse_dates=['Reporting Date'], infer_datetime_format=True)
     pct_cols = ['ESP', '% Surprise (last Qtr.)']
-    df[pct_cols] = df[pct_cols].applymap(clean_pcts)
-    df['Price'] = df['Price'].apply(clean_price)
+    df[pct_cols] = df[pct_cols].applymap(zu.clean_pcts)
+    df['Price'] = df['Price'].apply(zu.clean_price)
 
-    last_trading_day = get_last_open_trading_day()
+    last_trading_day = zu.get_last_open_trading_day()
     df.to_csv(FILEPATH + last_trading_day + '_esp_buys.csv', index=False)
     os.remove(filename)
 
@@ -215,53 +185,13 @@ def download_esp_lists(driver):
 
     df = pd.read_csv(filename, parse_dates=['Reporting Date'], infer_datetime_format=True)
     pct_cols = ['ESP', '% Surprise (last Qtr.)']
-    df[pct_cols] = df[pct_cols].applymap(clean_pcts)
-    df['Price'] = df['Price'].apply(clean_price)
+    df[pct_cols] = df[pct_cols].applymap(zu.clean_pcts)
+    df['Price'] = df['Price'].apply(zu.clean_price)
 
     df.to_csv(FILEPATH + last_trading_day + '_esp_sells.csv', index=False)
     os.remove(filename)
 
     return True
-
-
-def clean_price(x):
-    """
-    prices look like $1,789.21
-    """
-    new_x = x.replace('$', '')
-    new_x = new_x.replace(',', '')
-    return float(new_x)
-
-
-def clean_pcts(x):
-    """
-    the 'Chg. %' column and others have entries like +1.24%
-
-    also removes commas
-    """
-    # if not enough data, will be '-' with investing.com
-    if x == '-' or pd.isnull(x):
-        return np.nan
-    elif x == 'unch':
-        return float(0)
-    elif type(x) == float:
-        return x
-
-    new_x = x.replace('+', '')
-    new_x = x.replace(',', '')
-    new_x = new_x.replace('%', '')
-    new_x = float(new_x) / 100
-    return new_x
-
-
-def get_last_open_trading_day():
-    # use NY time so the day is correct -- should also correct for times after
-    # midnight NY time and before market close that day
-    today_ny = datetime.datetime.now(pytz.timezone('America/New_York'))
-    ndq = mcal.get_calendar('NASDAQ')
-    open_days = ndq.schedule(start_date=today_ny - pd.Timedelta(str(3*365) + ' days'), end_date=today_ny)
-    # basically, this waits for 3 hours after market close if it's the same day
-    return open_days.iloc[-1]['market_close'].date().strftime('%Y-%m-%d')
 
 
 def check_if_today_trading_day():
@@ -275,29 +205,8 @@ def check_if_up_to_date():
     """
     checks if latest trading day has been downloaded
     """
-    last_daily = get_latest_dl_date()
-    last_trading_day = get_last_open_trading_day()
-
-
-def remove_leftover_files():
-    filenames = []
-    filenames.append(FILEPATH + 'Zacks Earnings Surprise Prediction - Zacks Investment Research.csv')
-    filenames.append(FILEPATH + 'rank_5.xls')
-    filenames.append(FILEPATH + 'rank_1.xls')
-    for f in filenames:
-        if os.path.exists(f): os.remove(f)
-
-
-def get_latest_dl_date():
-    # gets latest file date
-    remove_leftover_files()
-    daily_files = glob.glob(FILEPATH + '*.csv')
-    if len(daily_files) == 0:
-        return None
-
-    daily_dates = [pd.to_datetime(f.split('/')[-1].split('_')[0].split('.')[0]) for f in daily_files]
-    last_daily = max(daily_dates)
-    return last_daily
+    last_daily = zu.get_latest_dl_date()
+    last_trading_day = zu.get_last_open_trading_day()
 
 
 def dl_all_data():
@@ -338,8 +247,8 @@ def daily_updater():
         # check if up to date, if it is, sleep
         today_utc = pd.to_datetime('now')
         today_ny = datetime.datetime.now(pytz.timezone('America/New_York'))
-        last_trading_day = get_last_open_trading_day()
-        up_to_date = last_trading_day == get_latest_dl_date().strftime('%Y-%m-%d')
+        last_trading_day = zu.get_last_open_trading_day()
+        up_to_date = last_trading_day == zu.get_latest_dl_date().strftime('%Y-%m-%d')
         if up_to_date:
             print('up to date; sleeping 1h')
         else:
