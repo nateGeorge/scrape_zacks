@@ -42,7 +42,7 @@ def setup_driver():
     # also change downloads folder to ticker_data within git repo
     # then file path to profile, and use here:
     # investing.com was the name of the profile]
-    prof_paths = [#'/home/nate/.mozilla/firefox/exzvq4ez.investing.com',
+    prof_paths = ['/home/nate/.mozilla/firefox/zexcr09k.zacks',
                 # work computer path
                 '/home/nate/.mozilla/firefox/s1myuf7i.zacks']
     found_prof = False
