@@ -93,8 +93,18 @@ def login(driver):
 
     try:
         driver.get('https://www.zacks.com/')
+        # try:
+        #     close_button = driver.find_element_by_class_name('close')
+        #     close_button.click()
+        # except NoSuchElementException:
+        #     pass
     except TimeoutException:
         pass
+
+    # press ESC a few times to close ads
+    for i in range(3):
+        webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+        time.sleep(2 * np.random.random())
 
     driver.find_element_by_link_text('Sign In').click()
     # for some reason there are multiple useraname/password fields
