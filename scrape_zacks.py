@@ -18,9 +18,9 @@ import pandas_market_calendars as mcal
 
 import zacks_utils as zu
 
-# from pyvirtualdisplay import Display
-# display = Display(visible=0, size=(1920, 1080))
-# display.start()
+from pyvirtualdisplay import Display
+display = Display(visible=0, size=(1920, 1080))
+display.start()
 
 
 FILEPATH = '/home/nate/Dropbox/data/zacks/'
@@ -79,8 +79,7 @@ def setup_driver():
     # prevent broken pipe errors
     # https://stackoverflow.com/a/13974451/4549682
     driver.implicitly_wait(5)
-    # barchart.com takes a long time to load; I think it's ads
-    driver.set_page_load_timeout(10)
+    driver.set_page_load_timeout(60)  # zacks needs a long time to load
     return driver
 
 
