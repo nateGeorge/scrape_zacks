@@ -100,7 +100,7 @@ def login(driver):
             #     close_button.click()
             # except NoSuchElementException:
             #     pass
-        except TimeoutException, WebDriverException:
+        except (TimeoutException, WebDriverException):
             pass
 
     # press ESC a few times to close ads
