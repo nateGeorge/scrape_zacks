@@ -9,7 +9,7 @@ import pandas as pd
 
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, WebDriverException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
@@ -18,9 +18,9 @@ import pandas_market_calendars as mcal
 
 import zacks_utils as zu
 
-from pyvirtualdisplay import Display
-display = Display(visible=0, size=(1920, 1080))
-display.start()
+# from pyvirtualdisplay import Display
+# display = Display(visible=0, size=(1920, 1080))
+# display.start()
 
 
 FILEPATH = '/home/nate/Dropbox/data/zacks/'
@@ -91,15 +91,17 @@ def login(driver):
         print('add email and pass to bashrc!! exiting.')
         return
 
-    try:
-        driver.get('https://www.zacks.com/')
-        # try:
-        #     close_button = driver.find_element_by_class_name('close')
-        #     close_button.click()
-        # except NoSuchElementException:
-        #     pass
-    except TimeoutException:
-        pass
+    while True:
+        try:
+            driver.get('https://www.zacks.com/')
+            break
+            # try:
+            #     close_button = driver.find_element_by_class_name('close')
+            #     close_button.click()
+            # except NoSuchElementException:
+            #     pass
+        except TimeoutException, WebDriverException:
+            pass
 
     # press ESC a few times to close ads
     for i in range(3):
