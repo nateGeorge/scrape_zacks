@@ -46,7 +46,7 @@ def setup_driver():
                 # work computer path
                 '/home/nate/.mozilla/firefox/s1myuf7i.zacks',
                 # new work comp
-                '/home/nate/.mozilla/firefox/']
+                '/home/nate/.mozilla/firefox/b3qojsad.zacks']
     found_prof = False
     for p in prof_paths:
         try:
