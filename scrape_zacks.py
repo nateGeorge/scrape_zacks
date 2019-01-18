@@ -44,7 +44,9 @@ def setup_driver():
     # investing.com was the name of the profile]
     prof_paths = ['/home/nate/.mozilla/firefox/zexcr09k.zacks',
                 # work computer path
-                '/home/nate/.mozilla/firefox/s1myuf7i.zacks']
+                '/home/nate/.mozilla/firefox/s1myuf7i.zacks',
+                # new work comp
+                '/home/nate/.mozilla/firefox/']
     found_prof = False
     for p in prof_paths:
         try:
@@ -74,7 +76,7 @@ def setup_driver():
     # # profile.set_preference('browser.download.dir', '/tmp')
     # profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv')
     # profile.set_preference('browser.helperApps.neverAsk.saveToDisk', '*')
-    driver = webdriver.Firefox(profile, executable_path='/home/nate/geckodriver')
+    driver = webdriver.Firefox(profile)
 
     # prevent broken pipe errors
     # https://stackoverflow.com/a/13974451/4549682
