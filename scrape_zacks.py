@@ -111,8 +111,14 @@ def login(driver):
 
     driver.find_element_by_link_text('Sign In').click()
     # for some reason there are multiple useraname/password fields
-    driver.find_elements_by_id('username')[-1].send_keys(username)
-    driver.find_elements_by_id('password')[-1].send_keys(password)
+
+    # used to be like this...changed around 5-2019
+    # driver.find_elements_by_id('username')[-1].send_keys(username)
+    # driver.find_elements_by_id('password')[-1].send_keys(password)
+
+    driver.find_elements_by_name('username')[-1].send_keys(username)
+    driver.find_elements_by_name('password')[-1].send_keys(password)
+
     # click the "Sign In" button
     time.sleep(1.27 + np.random.random())
     try:
