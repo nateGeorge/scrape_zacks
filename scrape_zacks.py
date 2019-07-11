@@ -18,9 +18,9 @@ import pandas_market_calendars as mcal
 
 import zacks_utils as zu
 
-from pyvirtualdisplay import Display
-display = Display(visible=0, size=(1920, 1080))
-display.start()
+# from pyvirtualdisplay import Display
+# display = Display(visible=0, size=(1920, 1080))
+# display.start()
 
 
 FILEPATH = '/home/nate/Dropbox/data/zacks/'
@@ -234,7 +234,11 @@ def dl_all_data():
     all_good = False
     while not all_good:
         print('downloading buy list')
-        all_good = download_buy_list(driver)
+        try:
+            all_good = download_buy_list(driver)
+        except:
+            all_good = False
+
         if not all_good:
             driver.quit()
             driver = setup_driver()
@@ -243,7 +247,10 @@ def dl_all_data():
     all_good = False
     while not all_good:
         print('downloading sell list')
-        all_good = download_sell_list(driver)
+        try:
+            all_good = download_sell_list(driver)
+        except:
+                all_good = False
         if not all_good:
             driver.quit()
             driver = setup_driver()
@@ -252,7 +259,10 @@ def dl_all_data():
     all_good = False
     while not all_good:
         print('downloading esp list')
-        all_good = download_esp_lists(driver)
+        try:
+            all_good = download_esp_lists(driver)
+        except:
+            all_good = False
         if not all_good:
             driver.quit()
             driver = setup_driver()
@@ -288,4 +298,5 @@ def daily_updater():
 
 if __name__ == "__main__":
     # TODO: scrape EPS estimates, sales estimates, zacks ranks for more stocks
-    daily_updater()
+    # daily_updater()
+    pass
