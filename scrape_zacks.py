@@ -298,5 +298,5 @@ def daily_updater():
 
 if __name__ == "__main__":
     # TODO: scrape EPS estimates, sales estimates, zacks ranks for more stocks
-    # daily_updater()
-    pass
+    daily_updater()
+    # pass
