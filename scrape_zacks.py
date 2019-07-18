@@ -18,9 +18,9 @@ import pandas_market_calendars as mcal
 
 import zacks_utils as zu
 
-# from pyvirtualdisplay import Display
-# display = Display(visible=0, size=(1920, 1080))
-# display.start()
+from pyvirtualdisplay import Display
+display = Display(visible=0, size=(1920, 1080))
+display.start()
 
 
 FILEPATH = '/home/nate/Dropbox/data/zacks/'
