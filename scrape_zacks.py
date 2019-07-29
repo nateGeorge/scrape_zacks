@@ -126,6 +126,11 @@ def login(driver):
     except TimeoutException:
         pass
 
+    try:
+        driver.find_element_by_id('accept_cookie').click()
+    except:
+        pass
+
     print('should be logged in now!')
 
 
@@ -262,6 +267,7 @@ def dl_all_data():
         try:
             all_good = download_esp_lists(driver)
         except:
+            print('some problem')
             all_good = False
         if not all_good:
             driver.quit()
